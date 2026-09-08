@@ -13,14 +13,18 @@ import CompareModal from './components/CompareModal';
 import AffordabilityCalculatorModal from './components/AffordabilityCalculatorModal';
 import LeaseGeneratorModal from './components/LeaseGeneratorModal';
 import RoommatesSection from './components/RoommatesSection';
+import AuthModal from './components/AuthModal';
+import UserProfileModal from './components/UserProfileModal';
 import Footer from './components/Footer';
-import { fetchProperties, fetchStatsOverview } from './api';
+import { fetchProperties, fetchStatsOverview, toggleSavePropertyApi } from './api';
+import { useAuth } from './context/AuthContext';
 import { translations } from './translations';
 import { Sparkles, Building, RefreshCw, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function App() {
   const [lang, setLang] = useState('en'); // 'en' | 'bn'
   const t = translations[lang] || translations.en;
+  const { user, token, isLoggedIn } = useAuth();
 
   const [properties, setProperties] = useState([]);
   const [stats, setStats] = useState(null);
@@ -69,6 +73,8 @@ export default function App() {
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [isLeaseModalOpen, setIsLeaseModalOpen] = useState(false);
   const [leaseTargetProperty, setLeaseTargetProperty] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // Toast feedback state
   const [toast, setToast] = useState(null);
@@ -167,13 +173,21 @@ export default function App() {
     showToast('Filters reset to default');
   };
 
-  const handleToggleSave = (propertyId) => {
+  const handleToggleSave = async (propertyId) => {
     if (savedIds.includes(propertyId)) {
       setSavedIds(savedIds.filter((id) => id !== propertyId));
       showToast('Removed from saved homes', 'info');
     } else {
       setSavedIds([...savedIds, propertyId]);
       showToast('Saved to your favorites! ❤️');
+    }
+
+    if (token) {
+      try {
+        await toggleSavePropertyApi(propertyId, token);
+      } catch (e) {
+        console.error('Failed to sync save with backend:', e);
+      }
     }
   };
 
@@ -207,6 +221,15 @@ export default function App() {
     showToast(`Showing homes within your budget: ৳${maxBudget.toLocaleString('en-IN')}`);
   };
 
+  const handleOpenPostModal = () => {
+    if (!isLoggedIn) {
+      showToast('Please sign in or create an account to post a property listing', 'info');
+      setIsAuthModalOpen(true);
+      return;
+    }
+    setIsPostModalOpen(true);
+  };
+
   const savedProperties = properties.filter((p) => savedIds.includes(p._id));
 
   return (
@@ -237,7 +260,7 @@ export default function App() {
         onCityChange={handleCityChange}
         savedCount={savedIds.length}
         onOpenSaved={() => setIsSavedModalOpen(true)}
-        onOpenPostModal={() => setIsPostModalOpen(true)}
+        onOpenPostModal={handleOpenPostModal}
         onScrollToExplore={() => exploreRef.current?.scrollIntoView({ behavior: 'smooth' })}
         onOpenCalculator={() => setIsCalculatorOpen(true)}
         onOpenLease={() => {
@@ -249,6 +272,8 @@ export default function App() {
         onOpenCompare={() => setIsCompareModalOpen(true)}
         lang={lang}
         onToggleLang={() => setLang(lang === 'en' ? 'bn' : 'en')}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
+        onOpenProfile={() => setIsProfileModalOpen(true)}
       />
 
       <main className="flex-1">
@@ -441,9 +466,27 @@ export default function App() {
         lang={lang}
       />
 
+      {/* User Login / Registration Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={() => {
+          showToast('Welcome to GRIHO! You are now signed in. 🎉');
+        }}
+        lang={lang}
+      />
+
+      {/* User Profile Modal */}
+      <UserProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        onOpenSaved={() => setIsSavedModalOpen(true)}
+        lang={lang}
+      />
+
       {/* Footer */}
       <Footer
-        onOpenPostModal={() => setIsPostModalOpen(true)}
+        onOpenPostModal={handleOpenPostModal}
         onSelectArea={handleSelectArea}
       />
     </div>

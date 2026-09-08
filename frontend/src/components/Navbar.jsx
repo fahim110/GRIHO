@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Home, Heart, PlusCircle, MapPin, Search, Building2, Calculator, Users, Globe, FileText } from 'lucide-react';
+import { Home, Heart, PlusCircle, MapPin, Search, Building2, Calculator, Users, Globe, FileText, User, LogIn, ChevronDown } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import { translations } from '../translations';
 
 export default function Navbar({
@@ -16,8 +17,11 @@ export default function Navbar({
   onOpenCompare,
   lang = 'en',
   onToggleLang,
+  onOpenAuth,
+  onOpenProfile,
 }) {
   const [isCityMenuOpen, setIsCityMenuOpen] = useState(false);
+  const { user, isLoggedIn } = useAuth();
   const t = translations[lang] || translations.en;
 
   const cities = ['Dhaka', 'Chittagong', 'Sylhet', 'Rajshahi', 'All'];
@@ -117,10 +121,10 @@ export default function Navbar({
           </button>
         </nav>
 
-        {/* Action Controls & Toggles */}
+        {/* Action Controls & User Auth */}
         <div className="flex items-center gap-2.5">
           
-          {/* Language Switcher Button */}
+          {/* Language Switcher */}
           <button
             onClick={onToggleLang}
             className="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white text-xs font-bold flex items-center gap-1 transition-all"
@@ -156,6 +160,30 @@ export default function Navbar({
               </span>
             )}
           </button>
+
+          {/* User Auth Section */}
+          {isLoggedIn ? (
+            <button
+              onClick={onOpenProfile}
+              className="flex items-center gap-2 p-1.5 pr-3 rounded-xl bg-slate-900 border border-slate-700 hover:border-emerald-500/50 transition-all text-xs font-semibold text-slate-200"
+            >
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white font-bold text-xs">
+                {user.name?.charAt(0).toUpperCase()}
+              </div>
+              <span className="hidden sm:inline truncate max-w-[90px]">{user.name.split(' ')[0]}</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-emerald-400 font-bold hidden md:inline">
+                {user.role === 'landlord' ? 'Landlord' : 'Tenant'}
+              </span>
+            </button>
+          ) : (
+            <button
+              onClick={onOpenAuth}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-emerald-500/50 text-xs font-bold text-slate-200 hover:text-white transition-all cursor-pointer"
+            >
+              <LogIn className="w-3.5 h-3.5 text-emerald-400" />
+              <span>{lang === 'bn' ? 'লগইন' : 'Sign In'}</span>
+            </button>
+          )}
 
           {/* Post Property CTA */}
           <button
