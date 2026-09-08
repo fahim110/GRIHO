@@ -34,48 +34,48 @@ export default function UserProfileModal({ isOpen, onClose, onOpenSaved, lang = 
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-fade-in">
       <div
-        className="relative w-full max-w-md bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+        className="relative w-full max-w-xl bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/90">
-          <div className="flex items-center gap-2">
-            <User className="w-5 h-5 text-emerald-400" />
-            <h2 className="text-base font-bold text-white">
+        <div className="flex items-center justify-between px-8 py-6 border-b border-slate-800 bg-slate-950/95">
+          <div className="flex items-center gap-3">
+            <User className="w-6 h-6 text-emerald-400" />
+            <h2 className="text-xl font-black text-white">
               {lang === 'bn' ? 'ব্যবহারকারীর প্রোফাইল' : 'User Profile'}
             </h2>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-full bg-slate-800 text-slate-300 hover:text-white">
-            <X className="w-4 h-4" />
+          <button onClick={onClose} className="p-2 rounded-full bg-slate-800 text-slate-300 hover:text-white cursor-pointer">
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-5 text-xs">
+        <div className="p-8 sm:p-10 space-y-6 text-sm">
           {successMsg && (
-            <div className="p-3 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <div className="p-4 rounded-2xl bg-emerald-950 border border-emerald-500/40 text-emerald-300 text-sm font-semibold flex items-center gap-2.5">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
               <span>Profile updated successfully!</span>
             </div>
           )}
 
           {/* User Avatar & Role Badge */}
-          <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-950/80 border border-slate-800">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-emerald-500/20 shrink-0">
+          <div className="flex items-center gap-5 p-5 rounded-3xl bg-slate-950/80 border border-slate-800">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white font-extrabold text-2xl shadow-lg shadow-emerald-500/20 shrink-0">
               {user.name?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="text-base font-bold text-white truncate">{user.name}</h3>
-              <div className="text-slate-400 text-xs truncate">{user.email}</div>
-              <div className="mt-1 flex items-center gap-1.5">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-800 text-slate-200 uppercase tracking-wider">
+              <h3 className="text-lg font-bold text-white truncate">{user.name}</h3>
+              <div className="text-slate-400 text-sm truncate mt-0.5">{user.email}</div>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-800 text-slate-200 uppercase tracking-wider">
                   {user.role === 'landlord' ? '🏢 Landlord' : '🏠 Tenant'}
                 </span>
                 {user.nidVerified && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-teal-950 text-teal-300 border border-teal-500/30 flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-teal-400" />
+                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-teal-950 text-teal-300 border border-teal-500/30 flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
                     <span>NID Verified</span>
                   </span>
                 )}
@@ -84,35 +84,35 @@ export default function UserProfileModal({ isOpen, onClose, onOpenSaved, lang = 
           </div>
 
           {isEditing ? (
-            <form onSubmit={handleSave} className="space-y-3">
+            <form onSubmit={handleSave} className="space-y-4">
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Full Name</label>
+                <label className="font-bold text-slate-200 block mb-1.5">Full Name</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full glass-input rounded-xl p-2 text-xs"
+                  className="w-full glass-input rounded-2xl p-3.5 text-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Phone Number</label>
+                <label className="font-bold text-slate-200 block mb-1.5">Phone Number</label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full glass-input rounded-xl p-2 text-xs"
+                  className="w-full glass-input rounded-2xl p-3.5 text-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">Account Role</label>
+                <label className="font-bold text-slate-200 block mb-1.5">Account Role</label>
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full glass-input rounded-xl p-2 text-xs bg-slate-900"
+                  className="w-full glass-input rounded-2xl p-3.5 text-sm bg-slate-900 cursor-pointer"
                 >
                   <option value="tenant">Tenant (Looking for rental flats)</option>
                   <option value="landlord">Landlord (Listing properties)</option>
@@ -120,39 +120,39 @@ export default function UserProfileModal({ isOpen, onClose, onOpenSaved, lang = 
               </div>
 
               <div>
-                <label className="font-semibold text-slate-300 block mb-1">National ID (NID) Number</label>
+                <label className="font-bold text-slate-200 block mb-1.5">National ID (NID) Number</label>
                 <input
                   type="text"
                   placeholder="10 or 17 digit NID"
                   value={formData.nidNumber}
                   onChange={(e) => setFormData({ ...formData, nidNumber: e.target.value })}
-                  className="w-full glass-input rounded-xl p-2 text-xs"
+                  className="w-full glass-input rounded-2xl p-3.5 text-sm"
                 />
               </div>
 
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-3 pt-3">
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="btn-secondary flex-1 py-2 rounded-xl text-xs font-semibold"
+                  className="btn-secondary flex-1 py-3 rounded-2xl text-sm font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="btn-primary flex-1 py-2 rounded-xl text-xs font-bold"
+                  className="btn-primary flex-1 py-3 rounded-2xl text-sm font-bold cursor-pointer"
                 >
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>
           ) : (
-            <div className="space-y-3">
-              <div className="space-y-2 bg-slate-950/60 p-3.5 rounded-2xl border border-slate-800 text-xs">
+            <div className="space-y-4">
+              <div className="space-y-3 bg-slate-950/60 p-5 rounded-3xl border border-slate-800 text-sm">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Phone:</span>
-                  <span className="font-semibold text-white">{user.phone}</span>
+                  <span className="font-semibold text-white">{user.phone || 'Not provided'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">NID Status:</span>
@@ -168,10 +168,10 @@ export default function UserProfileModal({ isOpen, onClose, onOpenSaved, lang = 
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="btn-secondary flex-1 py-2 rounded-xl text-xs font-semibold"
+                  className="btn-secondary flex-1 py-3 rounded-2xl text-sm font-semibold cursor-pointer"
                 >
                   Edit Profile
                 </button>
@@ -180,9 +180,9 @@ export default function UserProfileModal({ isOpen, onClose, onOpenSaved, lang = 
                     onClose();
                     onOpenSaved();
                   }}
-                  className="btn-secondary px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-1 text-rose-300"
+                  className="btn-secondary px-5 py-3 rounded-2xl text-sm font-semibold flex items-center gap-2 text-rose-300 cursor-pointer"
                 >
-                  <Heart className="w-3.5 h-3.5 text-rose-400" />
+                  <Heart className="w-4 h-4 text-rose-400" />
                   <span>Saved</span>
                 </button>
               </div>
@@ -192,9 +192,9 @@ export default function UserProfileModal({ isOpen, onClose, onOpenSaved, lang = 
                   logout();
                   onClose();
                 }}
-                className="w-full py-2.5 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-400 hover:bg-rose-900/40 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer mt-4"
+                className="w-full py-3.5 rounded-2xl bg-rose-950/40 border border-rose-500/30 text-rose-400 hover:bg-rose-900/40 text-sm font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer mt-4"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut className="w-4 h-4" />
                 <span>Log Out from GRIHO</span>
               </button>
             </div>

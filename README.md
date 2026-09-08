@@ -102,16 +102,40 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
+## 🚀 Render Deployment (Single Web Service)
+
+Deploying GRIHO on Render takes less than 2 minutes:
+
+1. **Sign in to [Render](https://dashboard.render.com/)** and click **New +** → **Web Service**.
+2. **Connect your GitHub repository**: `https://github.com/fahim110/GRIHO.git`
+3. Configure the following settings:
+   - **Name**: `griho-rentals`
+   - **Runtime**: `Node`
+   - **Branch**: `main`
+   - **Build Command**: `npm install && npm run build`
+   - **Start Command**: `npm start`
+4. In the **Environment Variables** section, add:
+   - `NODE_ENV`: `production`
+   - `MONGODB_URI`: `mongodb+srv://fahimseptember7_db_user:mu4b6VmGmCM729E9@cluster0.qlc7nfn.mongodb.net/griho_db?retryWrites=true&w=majority`
+   - `JWT_SECRET`: `griho_bangladesh_super_secret_jwt_key_2026`
+5. Click **Create Web Service**. Render will automatically build the frontend, launch the server on root `index.js`, and provide your live URL!
+
+---
+
 ## 📂 Project Structure
 
 ```
 GRIHO/
+├── index.js                    # Root server entry point for Render & production
+├── render.yaml                 # Render Blueprint configuration
+├── package.json                # Root build & start scripts
 ├── frontend/                   # Vite + React Frontend
 │   ├── src/
 │   │   ├── components/         # Navbar, HeroSearch, FilterBar, PropertyCard, Modals, AuthModal
 │   │   ├── context/            # AuthContext (login, register, session)
+│   │   ├── pages/              # HomePage, LoginPage, RegisterPage, DashboardPage
 │   │   ├── api.js              # Frontend REST API client
-│   │   ├── App.jsx             # Main Application Component
+│   │   ├── App.jsx             # React Router and main routes
 │   │   ├── translations.js     # English & Bengali Dictionary
 │   │   ├── index.css           # Glassmorphism & Bangladesh UI Tokens
 │   │   └── main.jsx
@@ -139,12 +163,11 @@ GRIHO/
 │   │   └── lease.js            # Lease Generator API
 │   ├── seed/
 │   │   └── seedData.js         # Realistic Bangladesh Rental Seed Script
-│   ├── index.js                # Server entry point
+│   ├── index.js                # Backend standalone dev server
 │   └── package.json
 │
 ├── .env.example                # Environment variables template
 ├── .gitignore                  # Git ignore rules (protects credentials)
-├── package.json                # Root convenience scripts
 └── README.md                   # Documentation
 ```
 
@@ -152,3 +175,4 @@ GRIHO/
 
 ## 📄 License
 This project is licensed under the MIT License.
+

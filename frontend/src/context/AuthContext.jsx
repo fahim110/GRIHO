@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { loginUser, registerUser, fetchUserProfile, updateUserProfile } from '../api';
+import { loginUser, registerUser, verifyOtpApi, resendOtpApi, socialLoginApi, googleAuthApi, fetchUserProfile, updateUserProfile } from '../api';
 
 const AuthContext = createContext(null);
 
@@ -42,12 +42,48 @@ export function AuthProvider({ children }) {
 
   const register = async (userData) => {
     const data = await registerUser(userData);
+    if (data.token) {
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('griho_auth_token', data.token);
+    }
+    return data;
+  };
+
+  const verifyOtp = async (email, otp) => {
+    const data = await verifyOtpApi({ email, otp });
+    if (data.success && data.token) {
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('griho_auth_token', data.token);
+      return data.user;
+    }
+    return data;
+  };
+
+  const resendOtp = async (email) => {
+    return await resendOtpApi({ email });
+  };
+
+  const socialLogin = async (socialData) => {
+    const data = await socialLoginApi(socialData);
     if (data.success) {
       setToken(data.token);
       setUser(data.user);
       localStorage.setItem('griho_auth_token', data.token);
       return data.user;
     }
+  };
+
+  const googleLogin = async ({ credential, code, redirectUri, role }) => {
+    const data = await googleAuthApi({ credential, code, redirectUri, role });
+    if (data.success) {
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('griho_auth_token', data.token);
+      return data.user;
+    }
+    return data;
   };
 
   const logout = () => {
@@ -75,6 +111,10 @@ export function AuthProvider({ children }) {
         isLandlord: user?.role === 'landlord',
         login,
         register,
+        verifyOtp,
+        resendOtp,
+        socialLogin,
+        googleLogin,
         logout,
         updateProfile,
       }}

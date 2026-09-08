@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, ArrowRight, Check, Minus, MessageCircle, MapPin, Building, Flame, Bed, Bath, ShieldCheck } from 'lucide-react';
+import PropertyVisual from './PropertyVisual';
 
 export default function CompareModal({ isOpen, onClose, properties, onRemoveProperty, onOpenDetails, lang = 'en' }) {
   if (!isOpen) return null;
@@ -7,37 +8,37 @@ export default function CompareModal({ isOpen, onClose, properties, onRemoveProp
   const formatBDT = (amount) => new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(amount || 0);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 animate-fade-in">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 lg:p-10 animate-fade-in">
       <div
-        className="relative w-full max-w-6xl bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        className="relative w-full max-w-6xl 2xl:max-w-7xl bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/90 shrink-0">
+        <div className="flex items-center justify-between px-8 sm:px-12 py-7 border-b border-slate-800 bg-slate-950/95 shrink-0">
           <div>
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
+            <h2 className="text-xl sm:text-2xl font-black text-white flex items-center gap-3">
               <span>⚖️</span>
               <span>{lang === 'bn' ? 'ফ্ল্যাট তুলনা ও বিশ্লেষণ (Compare Homes)' : 'Side-by-Side Property Comparison'}</span>
             </h2>
-            <p className="text-[11px] text-slate-400">
-              {lang === 'bn' ? `মোট ${properties.length} টি ফ্ল্যাট তুলনার জন্য নির্বাচিত` : `Comparing ${properties.length} selected properties`}
+            <p className="text-xs sm:text-sm text-slate-400 mt-1 font-medium">
+              {lang === 'bn' ? `মোট ${properties.length} টি ফ্ল্যাট তুলনার জন্য নির্বাচিত` : `Comparing ${properties.length} selected rental properties`}
             </p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-full bg-slate-800 text-slate-300 hover:text-white">
-            <X className="w-4 h-4" />
+          <button onClick={onClose} className="p-3 rounded-full bg-slate-800 text-slate-300 hover:text-white cursor-pointer">
+            <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="overflow-y-auto p-4 sm:p-6 space-y-4 flex-1 text-xs">
+        <div className="overflow-y-auto p-8 sm:p-12 space-y-8 flex-1 text-base">
           {properties.length === 0 ? (
-            <div className="text-center py-16 space-y-3">
-              <Building className="w-12 h-12 text-slate-600 mx-auto" />
-              <h3 className="text-base font-bold text-white">
+            <div className="text-center py-24 space-y-5">
+              <Building className="w-20 h-20 text-slate-600 mx-auto" />
+              <h3 className="text-xl font-bold text-white">
                 {lang === 'bn' ? 'তুলনার জন্য কোনো ফ্ল্যাট নির্বাচন করা হয়নি' : 'No properties selected for comparison'}
               </h3>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                {lang === 'bn' ? 'ফ্ল্যাট কার্ডের বিস্তারিত থেকে "তুলনা করুন" বাটনে ক্লিক করে এখানে যোগ করুন।' : 'Add properties to compare by clicking the compare button on property cards.'}
+              <p className="text-sm sm:text-base text-slate-400 max-w-md mx-auto">
+                {lang === 'bn' ? 'ফ্ল্যাট কার্ডের বিস্তারিত থেকে "তুলনা করুন" বাটনে ক্লিক করে এখানে যোগ করুন।' : 'Add properties to compare by clicking the compare button on any property card.'}
               </p>
             </div>
           ) : (
@@ -45,27 +46,25 @@ export default function CompareModal({ isOpen, onClose, properties, onRemoveProp
               <table className="w-full border-collapse">
                 <thead>
                   <tr>
-                    <th className="p-3 text-left bg-slate-950/80 text-slate-400 font-bold w-44 rounded-l-2xl">
+                    <th className="p-5 text-left bg-slate-950/90 text-slate-300 font-bold w-56 rounded-l-2xl text-sm sm:text-base">
                       {lang === 'bn' ? 'বৈশিষ্ট্যসমূহ' : 'Key Specifications'}
                     </th>
                     {properties.map((p) => (
-                      <th key={p._id} className="p-3 bg-slate-950/80 text-left min-w-[220px]">
+                      <th key={p._id} className="p-5 bg-slate-950/90 text-left min-w-[260px]">
                         <div className="relative">
                           <button
                             onClick={() => onRemoveProperty(p._id)}
-                            className="absolute -top-1 -right-1 p-1 rounded-full bg-slate-800 text-slate-400 hover:text-rose-400"
-                            title="Remove"
+                            className="absolute -top-2 -right-2 p-2 rounded-full bg-slate-800 text-slate-400 hover:text-rose-400 cursor-pointer shadow-lg"
+                            title="Remove from comparison"
                           >
-                            <X className="w-3.5 h-3.5" />
+                            <X className="w-4 h-4" />
                           </button>
-                          <img
-                            src={p.images?.[0] || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=400&q=80'}
-                            alt={p.title}
-                            className="w-full h-24 rounded-xl object-cover mb-2"
-                          />
-                          <h4 className="font-bold text-white text-xs line-clamp-1">{p.title}</h4>
-                          <div className="text-[11px] text-slate-400 flex items-center gap-1">
-                            <MapPin className="w-3 h-3 text-emerald-400" />
+                          <div className="w-full h-32 rounded-2xl overflow-hidden mb-3 border border-slate-800">
+                            <PropertyVisual property={p} aspect="aspect-[16/10]" showBadges={false} className="h-full p-2" />
+                          </div>
+                          <h4 className="font-extrabold text-white text-base line-clamp-1">{p.title}</h4>
+                          <div className="text-xs sm:text-sm text-slate-400 flex items-center gap-1.5 mt-0.5">
+                            <MapPin className="w-3.5 h-3.5 text-emerald-400" />
                             <span>{p.area}, {p.city}</span>
                           </div>
                         </div>
@@ -73,26 +72,26 @@ export default function CompareModal({ isOpen, onClose, properties, onRemoveProp
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/80">
+                <tbody className="divide-y divide-slate-800/80 text-sm sm:text-base">
                   {/* Monthly Rent */}
                   <tr>
-                    <td className="p-3 font-semibold text-slate-300">
+                    <td className="p-4 font-semibold text-slate-300">
                       {lang === 'bn' ? 'মাসিক ভাড়া' : 'Monthly Rent'}
                     </td>
                     {properties.map((p) => (
-                      <td key={p._id} className="p-3 text-emerald-400 font-extrabold text-sm">
-                        ৳{formatBDT(p.rent)} <span className="text-[10px] text-slate-400 font-normal">/mo</span>
+                      <td key={p._id} className="p-4 text-emerald-400 font-black text-xl">
+                        ৳{formatBDT(p.rent)} <span className="text-xs text-slate-400 font-normal">/mo</span>
                       </td>
                     ))}
                   </tr>
 
                   {/* Service Charge */}
                   <tr>
-                    <td className="p-3 font-semibold text-slate-300">
+                    <td className="p-4 font-semibold text-slate-300">
                       {lang === 'bn' ? 'সার্ভিস চার্জ' : 'Service Charge'}
                     </td>
                     {properties.map((p) => (
-                      <td key={p._id} className="p-3 text-white font-medium">
+                      <td key={p._id} className="p-4 text-white font-medium">
                         {p.serviceCharge > 0 ? `৳${formatBDT(p.serviceCharge)}/mo` : 'Included'}
                       </td>
                     ))}
@@ -100,110 +99,80 @@ export default function CompareModal({ isOpen, onClose, properties, onRemoveProp
 
                   {/* Gas Type */}
                   <tr>
-                    <td className="p-3 font-semibold text-slate-300">
-                      {lang === 'bn' ? 'গ্যাস সংযোগ' : 'Gas Type'}
+                    <td className="p-4 font-semibold text-slate-300">
+                      {lang === 'bn' ? 'গ্যাস সরবরাহ' : 'Gas Type'}
                     </td>
                     {properties.map((p) => (
-                      <td key={p._id} className="p-3">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          p.gasType === 'Titas Line Gas' ? 'bg-amber-950/80 text-amber-300 border border-amber-500/30' : 'bg-slate-800 text-slate-300'
-                        }`}>
-                          {p.gasType}
-                        </span>
+                      <td key={p._id} className="p-4 font-bold text-amber-300">
+                        🔥 {p.gasType}
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* Bed & Bath */}
+                  <tr>
+                    <td className="p-4 font-semibold text-slate-300">
+                      {lang === 'bn' ? 'বেড ও বাথ' : 'Bed & Bath'}
+                    </td>
+                    {properties.map((p) => (
+                      <td key={p._id} className="p-4 text-slate-200">
+                        {p.bedrooms} Beds • {p.bathrooms} Baths
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* Floor Area */}
+                  <tr>
+                    <td className="p-4 font-semibold text-slate-300">
+                      {lang === 'bn' ? 'আয়তন' : 'Size (Sq. Ft)'}
+                    </td>
+                    {properties.map((p) => (
+                      <td key={p._id} className="p-4 text-slate-200">
+                        {p.sizeSqFt} sq. ft
                       </td>
                     ))}
                   </tr>
 
                   {/* Tenant Policy */}
                   <tr>
-                    <td className="p-3 font-semibold text-slate-300">
-                      {lang === 'bn' ? 'ভাড়াটিয়া ধরন' : 'Tenant Policy'}
+                    <td className="p-4 font-semibold text-slate-300">
+                      {lang === 'bn' ? 'ভাড়াটিয়া নীতি' : 'Tenant Policy'}
                     </td>
                     {properties.map((p) => (
-                      <td key={p._id} className="p-3 font-semibold text-sky-300">
+                      <td key={p._id} className="p-4 font-semibold text-sky-300">
                         {p.tenantPolicy}
-                      </td>
-                    ))}
-                  </tr>
-
-                  {/* Bed / Bath / Area */}
-                  <tr>
-                    <td className="p-3 font-semibold text-slate-300">
-                      {lang === 'bn' ? 'বেড / বাথ / আয়তন' : 'Bed / Bath / Size'}
-                    </td>
-                    {properties.map((p) => (
-                      <td key={p._id} className="p-3 text-slate-200">
-                        {p.bedrooms} Beds • {p.bathrooms} Baths • {p.sizeSqFt} sqft
-                      </td>
-                    ))}
-                  </tr>
-
-                  {/* Floor & Facing */}
-                  <tr>
-                    <td className="p-3 font-semibold text-slate-300">
-                      {lang === 'bn' ? 'তলা ও দিক' : 'Floor & Facing'}
-                    </td>
-                    {properties.map((p) => (
-                      <td key={p._id} className="p-3 text-slate-300">
-                        {p.floor} • 🧭 {p.facing || 'South'}
-                      </td>
-                    ))}
-                  </tr>
-
-                  {/* Advance Deposit */}
-                  <tr>
-                    <td className="p-3 font-semibold text-slate-300">
-                      {lang === 'bn' ? 'অগ্রিম / জামানত' : 'Advance Deposit'}
-                    </td>
-                    {properties.map((p) => (
-                      <td key={p._id} className="p-3 text-slate-300">
-                        {p.advanceDepositMonths || 2} Months (৳{formatBDT((p.rent || 0) * (p.advanceDepositMonths || 2))})
                       </td>
                     ))}
                   </tr>
 
                   {/* Lift & Generator */}
                   <tr>
-                    <td className="p-3 font-semibold text-slate-300">
+                    <td className="p-4 font-semibold text-slate-300">
                       {lang === 'bn' ? 'লিফট ও জেনারেটর' : 'Lift & Generator'}
                     </td>
                     {properties.map((p) => (
-                      <td key={p._id} className="p-3">
-                        <div className="space-y-1 text-[11px]">
-                          <div>{p.amenities?.lift ? '✅ Lift Available' : '❌ No Lift'}</div>
-                          <div>{p.amenities?.generatorBackup ? '✅ Standby Generator' : '❌ No Generator'}</div>
-                        </div>
+                      <td key={p._id} className="p-4 text-slate-200">
+                        {p.amenities?.lift ? '✅ Lift' : '❌ No Lift'} • {p.amenities?.generatorBackup ? '✅ Gen' : '❌ No Gen'}
                       </td>
                     ))}
                   </tr>
 
-                  {/* Car Parking */}
+                  {/* Action row */}
                   <tr>
-                    <td className="p-3 font-semibold text-slate-300">
-                      {lang === 'bn' ? 'গাড়ি পার্কিং' : 'Car Parking'}
+                    <td className="p-4 font-semibold text-slate-300">
+                      {lang === 'bn' ? 'পদক্ষেপ' : 'Actions'}
                     </td>
                     {properties.map((p) => (
-                      <td key={p._id} className="p-3">
-                        {p.amenities?.carParking ? '✅ Dedicated Space' : '❌ No Parking'}
-                      </td>
-                    ))}
-                  </tr>
-
-                  {/* Direct Contact */}
-                  <tr>
-                    <td className="p-3 font-semibold text-slate-300">
-                      {lang === 'bn' ? 'যোগাযোগ' : 'Action'}
-                    </td>
-                    {properties.map((p) => (
-                      <td key={p._id} className="p-3">
+                      <td key={p._id} className="p-4">
                         <button
                           onClick={() => {
+                            if (onOpenDetails) onOpenDetails(p);
                             onClose();
-                            onOpenDetails(p);
                           }}
-                          className="btn-primary w-full py-1.5 px-3 rounded-lg text-xs font-bold"
+                          className="btn-primary w-full py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 cursor-pointer"
                         >
-                          {lang === 'bn' ? 'বিস্তারিত দেখুন' : 'View Full Details'}
+                          <span>View Details</span>
+                          <ArrowRight className="w-4 h-4" />
                         </button>
                       </td>
                     ))}

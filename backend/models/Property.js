@@ -196,6 +196,10 @@ const propertySchema = new mongoose.Schema(
       enum: ['Available', 'Booked', 'Under Negotiation'],
       default: 'Available',
     },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
   {
     timestamps: true,

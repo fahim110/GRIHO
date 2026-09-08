@@ -14,6 +14,32 @@ export const registerUser = async (userData) => {
   return data;
 };
 
+export const verifyOtpApi = async ({ email, otp }) => {
+  const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, otp }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'OTP verification failed');
+  }
+  return data;
+};
+
+export const resendOtpApi = async ({ email }) => {
+  const response = await fetch(`${API_BASE_URL}/auth/resend-otp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Failed to resend OTP');
+  }
+  return data;
+};
+
 export const loginUser = async (credentials) => {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
@@ -23,6 +49,32 @@ export const loginUser = async (credentials) => {
   const data = await response.json();
   if (!response.ok) {
     throw new Error(data.message || 'Login failed');
+  }
+  return data;
+};
+
+export const socialLoginApi = async (socialData) => {
+  const response = await fetch(`${API_BASE_URL}/auth/social-login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(socialData),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Social login failed');
+  }
+  return data;
+};
+
+export const googleAuthApi = async ({ credential, code, redirectUri, role }) => {
+  const response = await fetch(`${API_BASE_URL}/auth/google`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credential, code, redirectUri, role }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Google authentication failed');
   }
   return data;
 };
@@ -110,17 +162,60 @@ export const createProperty = async (propertyData, token) => {
   return response.json();
 };
 
+export const fetchMyListings = async (token) => {
+  const response = await fetch(`${API_BASE_URL}/properties/user/my-listings`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) return { success: false, data: [] };
+  return response.json();
+};
+
+export const updatePropertyStatus = async (propertyId, status, token) => {
+  const response = await fetch(`${API_BASE_URL}/properties/${propertyId}/status`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+  return response.json();
+};
+
 // Inquiries / Tour Booking APIs
-export const createInquiry = async (inquiryData) => {
+export const createInquiry = async (inquiryData, token) => {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers.Authorization = `Bearer ${token}`;
+
   const response = await fetch(`${API_BASE_URL}/inquiries`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(inquiryData),
   });
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.message || 'Failed to schedule tour');
   }
+  return response.json();
+};
+
+export const fetchMyInquiries = async (token) => {
+  const response = await fetch(`${API_BASE_URL}/inquiries/my-inquiries`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) return { success: false, data: [] };
+  return response.json();
+};
+
+export const updateInquiryStatus = async (inquiryId, status, token) => {
+  const response = await fetch(`${API_BASE_URL}/inquiries/${inquiryId}/status`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
   return response.json();
 };
 

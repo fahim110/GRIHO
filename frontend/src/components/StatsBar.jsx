@@ -30,22 +30,22 @@ export default function StatsBar({ stats }) {
   ];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-14">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+    <section className="w-full max-w-[95vw] xl:max-w-[1720px] 2xl:max-w-[1920px] mx-auto px-4 sm:px-8 lg:px-12 2xl:px-16 mb-16">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {items.map((item, idx) => (
           <div
             key={idx}
-            className="glass-panel rounded-2xl p-4 sm:p-5 flex items-center gap-4 hover:border-slate-700 transition-colors"
+            className="glass-panel rounded-3xl p-6 sm:p-7 flex items-center gap-5 hover:border-slate-700 transition-colors shadow-sm"
           >
-            <div className="w-12 h-12 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-center shrink-0">
+            <div className="w-14 h-14 rounded-2xl bg-slate-900/95 border border-slate-800 flex items-center justify-center shrink-0">
               {item.icon}
             </div>
             <div>
-              <div className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                 {item.value}
               </div>
-              <div className="text-xs font-semibold text-slate-300">{item.label}</div>
-              <div className="text-[11px] text-slate-400 hidden sm:block">{item.sub}</div>
+              <div className="text-xs sm:text-sm font-bold text-slate-200 mt-0.5">{item.label}</div>
+              <div className="text-xs text-slate-400 hidden sm:block mt-0.5">{item.sub}</div>
             </div>
           </div>
         ))}
