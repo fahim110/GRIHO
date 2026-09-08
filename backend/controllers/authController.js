@@ -533,3 +533,18 @@ exports.googleAuth = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// @desc    Get public authentication configuration (Google Client ID)
+// @route   GET /api/auth/config
+exports.getAuthConfig = (req, res) => {
+  const googleClientId =
+    process.env.GOOGLE_CLIENT_ID ||
+    process.env.VITE_GOOGLE_CLIENT_ID ||
+    '';
+
+  res.json({
+    success: true,
+    googleClientId,
+  });
+};
+

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, ShieldCheck, CheckCircle, AlertCircle, Loader2, ArrowRight, Sparkles, LogIn } from 'lucide-react';
+import { X, ShieldCheck, CheckCircle, AlertCircle, Loader2, Info } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { fetchAuthConfig } from '../api';
 import { useNavigate } from 'react-router-dom';
 
 export default function GenuineSocialAuthModal({
@@ -11,7 +12,7 @@ export default function GenuineSocialAuthModal({
 }) {
   if (!isOpen) return null;
 
-  const { googleLogin, socialLogin } = useAuth();
+  const { googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const googleBtnRef = useRef(null);
@@ -23,23 +24,23 @@ export default function GenuineSocialAuthModal({
     return import.meta.env.VITE_GOOGLE_CLIENT_ID || localStorage.getItem('griho_google_client_id') || '';
   });
 
-  // Sample quick-test Google profiles
-  const sampleGoogleAccounts = [
-    {
-      name: 'Tanvir Ahmed',
-      email: 'tanvir.ahmed.bd@gmail.com',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80',
-      role: 'tenant',
-      roleLabel: 'Verified Tenant (ভাড়াটিয়া)',
-    },
-    {
-      name: 'Fahim Chowdhury',
-      email: 'chowdhury.properties@gmail.com',
-      avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=120&h=120&q=80',
-      role: 'landlord',
-      roleLabel: 'Verified Landlord (বাড়িওয়ালা)',
-    },
-  ];
+  // Fetch client ID dynamically from backend if not baked into frontend bundle
+  useEffect(() => {
+    if (!googleClientId) {
+      fetchAuthConfig().then((cfg) => {
+        if (cfg?.googleClientId) {
+          setGoogleClientId(cfg.googleClientId);
+          try {
+            localStorage.setItem('griho_google_client_id', cfg.googleClientId);
+          } catch {
+            // ignore storage error
+          }
+        }
+      }).catch((e) => {
+        console.warn('Failed to fetch auth config from server:', e);
+      });
+    }
+  }, [googleClientId]);
 
   // Handle genuine credential response from Google Identity Services
   const handleGoogleCredentialResponse = async (response) => {
@@ -127,37 +128,14 @@ export default function GenuineSocialAuthModal({
   }, [googleClientId, role]);
 
   const handleLaunchGoogleDirectOAuth = () => {
-    if (!googleClientId) return;
+    if (!googleClientId) {
+      setError('Google OAuth Client ID is not configured. Please set GOOGLE_CLIENT_ID in your server environment.');
+      return;
+    }
     const redirectUri = window.location.origin + '/oauth/google';
     const scope = encodeURIComponent('openid profile email');
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(googleClientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${scope}&access_type=offline&prompt=select_account`;
     window.location.href = authUrl;
-  };
-
-  const handleQuickTestGoogleLogin = async (acc) => {
-    setLoading(true);
-    setStatusMessage(`Signing in with Google Account (${acc.email})...`);
-    setError(null);
-
-    try {
-      const user = await socialLogin({
-        provider: 'google',
-        name: acc.name,
-        email: acc.email,
-        avatar: acc.avatar,
-        role: acc.role || role,
-      });
-
-      setStatusMessage(`Welcome ${user.name}! Redirecting to your dashboard...`);
-      setTimeout(() => {
-        setLoading(false);
-        onClose();
-        navigate('/dashboard');
-      }, 700);
-    } catch (err) {
-      setLoading(false);
-      setError(err.message || 'Failed to sign in with Google account.');
-    }
   };
 
   return (
@@ -208,16 +186,16 @@ export default function GenuineSocialAuthModal({
           <div className="py-8 text-center space-y-3 animate-fade-in">
             <Loader2 className="w-9 h-9 text-emerald-400 animate-spin mx-auto" />
             <p className="text-sm font-bold text-white">{statusMessage}</p>
-            <p className="text-xs text-slate-400">Verifying session with GRIHO server...</p>
+            <p className="text-xs text-slate-400">Connecting with GRIHO server...</p>
           </div>
         )}
 
-        {/* Google Options */}
+        {/* Google Sign-in Options */}
         {!loading && (
           <div className="space-y-4">
             <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3.5">
               <div className="text-xs text-slate-300 font-medium text-center">
-                One-Click Authentic Google Login:
+                One-Click Genuine Google Sign-In:
               </div>
 
               {/* Official GIS Button Container */}
@@ -227,7 +205,7 @@ export default function GenuineSocialAuthModal({
 
               <div className="relative py-1">
                 <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-800" /></div>
-                <div className="relative flex justify-center text-[10px] uppercase font-bold text-slate-500"><span className="bg-slate-950 px-2">or direct accounts window</span></div>
+                <div className="relative flex justify-center text-[10px] uppercase font-bold text-slate-500"><span className="bg-slate-950 px-2">or accounts window</span></div>
               </div>
 
               {/* Direct Google Accounts Button */}
@@ -246,34 +224,17 @@ export default function GenuineSocialAuthModal({
               </button>
             </div>
 
-            {/* Quick Demo Google Accounts */}
-            <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-2">
-              <div className="text-[11px] font-bold text-slate-400 flex items-center justify-between">
-                <span>Quick Test Google Profiles:</span>
-                <span className="text-emerald-400 text-[10px]">Instant Login</span>
+            {!googleClientId && (
+              <div className="p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/30 text-amber-300 text-xs space-y-1.5">
+                <div className="font-bold flex items-center gap-1.5">
+                  <Info className="w-4 h-4 text-amber-400" />
+                  <span>Google Client ID Configuration</span>
+                </div>
+                <p className="text-[11px] text-amber-200/80 leading-relaxed">
+                  To authenticate with live Google accounts, please set <code className="bg-amber-900/50 px-1 py-0.5 rounded text-amber-200 font-mono">GOOGLE_CLIENT_ID</code> in your Render / deployment environment variables.
+                </p>
               </div>
-              <div className="space-y-1.5">
-                {sampleGoogleAccounts.map((acc) => (
-                  <button
-                    key={acc.email}
-                    type="button"
-                    onClick={() => handleQuickTestGoogleLogin(acc)}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/60 flex items-center justify-between transition-all cursor-pointer text-left"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <img src={acc.avatar} alt={acc.name} className="w-7 h-7 rounded-full object-cover border border-slate-600" />
-                      <div>
-                        <div className="text-xs font-bold text-white">{acc.name}</div>
-                        <div className="text-[10px] text-slate-400">{acc.email}</div>
-                      </div>
-                    </div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                      {acc.role}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -288,3 +249,4 @@ export default function GenuineSocialAuthModal({
     </div>
   );
 }
+

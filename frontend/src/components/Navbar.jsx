@@ -29,7 +29,7 @@ export default function Navbar({
   onScrollToExplore,
   onOpenCalculator,
   onOpenLease,
-  onScrollToRoommates,
+  onOpenRoommates,
   compareCount = 0,
   onOpenCompare,
   lang = 'en',
@@ -116,7 +116,7 @@ export default function Navbar({
           </button>
           
           <button
-            onClick={onScrollToRoommates}
+            onClick={onOpenRoommates}
             className="hover:text-sky-400 transition-colors flex items-center gap-2 cursor-pointer"
           >
             <Users className="w-4 h-4 text-sky-400" />

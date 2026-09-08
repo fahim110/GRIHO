@@ -13,7 +13,7 @@ import SavedFavoritesModal from '../components/SavedFavoritesModal';
 import CompareModal from '../components/CompareModal';
 import AffordabilityCalculatorModal from '../components/AffordabilityCalculatorModal';
 import LeaseGeneratorModal from '../components/LeaseGeneratorModal';
-import RoommatesSection from '../components/RoommatesSection';
+import RoommatesModal from '../components/RoommatesModal';
 import AuthModal from '../components/AuthModal';
 import UserProfileModal from '../components/UserProfileModal';
 import Footer from '../components/Footer';
@@ -79,6 +79,7 @@ export default function HomePage({
   const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   const [isLeaseModalOpen, setIsLeaseModalOpen] = useState(false);
   const [leaseTargetProperty, setLeaseTargetProperty] = useState(null);
+  const [isRoommatesModalOpen, setIsRoommatesModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
@@ -86,7 +87,7 @@ export default function HomePage({
   const [toast, setToast] = useState(null);
 
   const exploreRef = useRef(null);
-  const roommatesRef = useRef(null);
+
 
   useEffect(() => {
     try {
@@ -273,7 +274,7 @@ export default function HomePage({
           setLeaseTargetProperty(null);
           setIsLeaseModalOpen(true);
         }}
-        onScrollToRoommates={() => roommatesRef.current?.scrollIntoView({ behavior: 'smooth' })}
+        onOpenRoommates={() => setIsRoommatesModalOpen(true)}
         compareCount={comparedProperties.length}
         onOpenCompare={() => setIsCompareModalOpen(true)}
         lang={lang}
@@ -390,11 +391,6 @@ export default function HomePage({
 
         </section>
 
-        {/* Roommates & Sublet Finder Section */}
-        <div ref={roommatesRef} className="scroll-mt-24">
-          <RoommatesSection lang={lang} onSelectArea={handleSelectArea} />
-        </div>
-
       </main>
 
       {/* Property Detail Modal */}
@@ -417,6 +413,14 @@ export default function HomePage({
           lang={lang}
         />
       )}
+
+      {/* Roommate Finder Modal */}
+      <RoommatesModal
+        isOpen={isRoommatesModalOpen}
+        onClose={() => setIsRoommatesModalOpen(false)}
+        lang={lang}
+        onSelectArea={handleSelectArea}
+      />
 
       {/* Landlord Post Property Modal */}
       <PostPropertyModal

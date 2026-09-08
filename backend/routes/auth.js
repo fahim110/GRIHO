@@ -10,9 +10,11 @@ const {
   getUserProfile,
   updateUserProfile,
   toggleSaveProperty,
+  getAuthConfig,
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 
+router.get('/config', getAuthConfig);
 router.post('/register', registerUser);
 router.post('/verify-otp', verifyOtp);
 router.post('/resend-otp', resendOtp);
@@ -24,3 +26,4 @@ router.put('/update-profile', protect, updateUserProfile);
 router.post('/toggle-save/:propertyId', protect, toggleSaveProperty);
 
 module.exports = router;
+

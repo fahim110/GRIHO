@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, ArrowLeft, ExternalLink, Key, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { fetchAuthConfig } from '../api';
 
 export default function OAuthPage() {
   const { provider } = useParams();
@@ -21,7 +22,23 @@ export default function OAuthPage() {
     return import.meta.env.VITE_GOOGLE_CLIENT_ID || localStorage.getItem('griho_google_client_id') || '';
   });
 
+  useEffect(() => {
+    if (!googleClientId) {
+      fetchAuthConfig().then((cfg) => {
+        if (cfg?.googleClientId) {
+          setGoogleClientId(cfg.googleClientId);
+          try {
+            localStorage.setItem('griho_google_client_id', cfg.googleClientId);
+          } catch {
+            // ignore
+          }
+        }
+      });
+    }
+  }, [googleClientId]);
+
   const [customInputId, setCustomInputId] = useState('');
+
 
   // Check for incoming OAuth redirect tokens in URL hash or query params
   useEffect(() => {

@@ -30,7 +30,6 @@ import {
   fetchUserProfile,
   updatePropertyStatus,
   updateInquiryStatus,
-  fetchProperties,
 } from '../api';
 import PropertyVisual from '../components/PropertyVisual';
 
@@ -42,7 +41,6 @@ export default function DashboardPage({ onOpenPostModal, onOpenLease, onOpenCalc
   const [myListings, setMyListings] = useState([]);
   const [myInquiries, setMyInquiries] = useState([]);
   const [savedFlats, setSavedFlats] = useState([]);
-  const [featuredProperties, setFeaturedProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileMessage, setProfileMessage] = useState(null);
@@ -68,11 +66,10 @@ export default function DashboardPage({ onOpenPostModal, onOpenLease, onOpenCalc
     const loadData = async () => {
       setLoading(true);
       try {
-        const [profileRes, listingsRes, inqRes, propsRes] = await Promise.all([
+        const [profileRes, listingsRes, inqRes] = await Promise.all([
           fetchUserProfile(token).catch(() => ({ success: false })),
           fetchMyListings(token).catch(() => ({ success: false, data: [] })),
           fetchMyInquiries(token).catch(() => ({ success: false, data: [] })),
-          fetchProperties().catch(() => ({ success: false, data: [] })),
         ]);
 
         if (profileRes.success && profileRes.user) {
@@ -95,10 +92,6 @@ export default function DashboardPage({ onOpenPostModal, onOpenLease, onOpenCalc
         if (inqRes.success && inqRes.data) {
           setMyInquiries(inqRes.data);
         }
-
-        if (propsRes.success && propsRes.data) {
-          setFeaturedProperties(propsRes.data.slice(0, 6));
-        }
       } catch (err) {
         console.error('Error loading dashboard:', err);
       } finally {
@@ -108,6 +101,7 @@ export default function DashboardPage({ onOpenPostModal, onOpenLease, onOpenCalc
 
     loadData();
   }, [token]);
+
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -562,54 +556,6 @@ export default function DashboardPage({ onOpenPostModal, onOpenLease, onOpenCalc
                 </div>
               )}
             </div>
-
-            {/* Recommended / Explore Flats Section on Dashboard */}
-            {featuredProperties.length > 0 && (
-              <div className="space-y-3.5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-base sm:text-lg font-black text-white">Recommended Verified Flats</h3>
-                    <p className="text-xs text-slate-400">Direct from verified owners in Dhaka & Chittagong</p>
-                  </div>
-                  <Link
-                    to="/"
-                    className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>View Full Marketplace</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {featuredProperties.slice(0, 4).map((p) => (
-                    <div key={p._id} className="glass-panel rounded-2xl p-3.5 border border-slate-800 hover:border-emerald-500/50 transition-all flex flex-col justify-between space-y-3 shadow-md">
-                      <div className="w-full h-36 rounded-xl overflow-hidden border border-slate-800">
-                        <PropertyVisual property={p} aspect="aspect-[16/10]" showBadges={false} className="h-full p-2" />
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-base font-black text-emerald-400">৳{formatBDT(p.rent)}<span className="text-[10px] text-slate-400 font-normal">/mo</span></span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                            {p.bedrooms} Beds
-                          </span>
-                        </div>
-                        <h4 className="font-bold text-white text-xs line-clamp-1">{p.title}</h4>
-                        <div className="text-[11px] text-slate-400 flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-emerald-400 shrink-0" />
-                          <span>{p.area}, {p.city}</span>
-                        </div>
-                      </div>
-                      <Link
-                        to="/"
-                        className="btn-secondary w-full py-1.5 rounded-xl text-xs font-bold text-center block"
-                      >
-                        View Details
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Bangladesh Rental Guidelines & Security Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">

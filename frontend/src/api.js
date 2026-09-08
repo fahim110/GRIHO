@@ -79,6 +79,17 @@ export const googleAuthApi = async ({ credential, code, redirectUri, role }) => 
   return data;
 };
 
+export const fetchAuthConfig = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/config`);
+    if (!response.ok) return { success: false, googleClientId: '' };
+    return await response.json();
+  } catch {
+    return { success: false, googleClientId: '' };
+  }
+};
+
+
 export const fetchUserProfile = async (token) => {
   const response = await fetch(`${API_BASE_URL}/auth/me`, {
     headers: { Authorization: `Bearer ${token}` },
