@@ -9,11 +9,19 @@ import PropertyDetailModal from './components/PropertyDetailModal';
 import PostPropertyModal from './components/PostPropertyModal';
 import ScheduleTourModal from './components/ScheduleTourModal';
 import SavedFavoritesModal from './components/SavedFavoritesModal';
+import CompareModal from './components/CompareModal';
+import AffordabilityCalculatorModal from './components/AffordabilityCalculatorModal';
+import LeaseGeneratorModal from './components/LeaseGeneratorModal';
+import RoommatesSection from './components/RoommatesSection';
 import Footer from './components/Footer';
 import { fetchProperties, fetchStatsOverview } from './api';
+import { translations } from './translations';
 import { Sparkles, Building, RefreshCw, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function App() {
+  const [lang, setLang] = useState('en'); // 'en' | 'bn'
+  const t = translations[lang] || translations.en;
+
   const [properties, setProperties] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -48,19 +56,26 @@ export default function App() {
     }
   });
 
+  // Compared Properties (up to 3)
+  const [comparedProperties, setComparedProperties] = useState([]);
+
   // Modals state
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [tourProperty, setTourProperty] = useState(null);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
   const [isTourModalOpen, setIsTourModalOpen] = useState(false);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
+  const [isLeaseModalOpen, setIsLeaseModalOpen] = useState(false);
+  const [leaseTargetProperty, setLeaseTargetProperty] = useState(null);
 
   // Toast feedback state
   const [toast, setToast] = useState(null);
 
   const exploreRef = useRef(null);
+  const roommatesRef = useRef(null);
 
-  // Save to localStorage when savedIds changes
   useEffect(() => {
     try {
       localStorage.setItem('griho_saved_flats', JSON.stringify(savedIds));
@@ -162,10 +177,34 @@ export default function App() {
     }
   };
 
+  const handleToggleCompare = (property) => {
+    const exists = comparedProperties.find((p) => p._id === property._id);
+    if (exists) {
+      setComparedProperties(comparedProperties.filter((p) => p._id !== property._id));
+      showToast('Removed from comparison', 'info');
+    } else {
+      if (comparedProperties.length >= 3) {
+        showToast('You can compare up to 3 properties at a time', 'info');
+        setIsCompareModalOpen(true);
+        return;
+      }
+      setComparedProperties([...comparedProperties, property]);
+      showToast(`Added "${property.title.slice(0, 24)}..." to comparison! ⚖️`);
+    }
+  };
+
   const handlePropertyCreated = (newProperty) => {
     setProperties([newProperty, ...properties]);
     showToast('🎉 Your rental listing has been published successfully!');
     loadStats();
+  };
+
+  const handleApplyAffordableBudget = (maxBudget) => {
+    setFilters((prev) => ({ ...prev, maxRent: maxBudget }));
+    if (exploreRef.current) {
+      exploreRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+    showToast(`Showing homes within your budget: ৳${maxBudget.toLocaleString('en-IN')}`);
   };
 
   const savedProperties = properties.filter((p) => savedIds.includes(p._id));
@@ -200,6 +239,16 @@ export default function App() {
         onOpenSaved={() => setIsSavedModalOpen(true)}
         onOpenPostModal={() => setIsPostModalOpen(true)}
         onScrollToExplore={() => exploreRef.current?.scrollIntoView({ behavior: 'smooth' })}
+        onOpenCalculator={() => setIsCalculatorOpen(true)}
+        onOpenLease={() => {
+          setLeaseTargetProperty(null);
+          setIsLeaseModalOpen(true);
+        }}
+        onScrollToRoommates={() => roommatesRef.current?.scrollIntoView({ behavior: 'smooth' })}
+        compareCount={comparedProperties.length}
+        onOpenCompare={() => setIsCompareModalOpen(true)}
+        lang={lang}
+        onToggleLang={() => setLang(lang === 'en' ? 'bn' : 'en')}
       />
 
       <main className="flex-1">
@@ -211,6 +260,12 @@ export default function App() {
             if (exploreRef.current) exploreRef.current.scrollIntoView({ behavior: 'smooth' });
           }}
           onQuickSelect={handleQuickSelect}
+          onOpenCalculator={() => setIsCalculatorOpen(true)}
+          onOpenLease={() => {
+            setLeaseTargetProperty(null);
+            setIsLeaseModalOpen(true);
+          }}
+          lang={lang}
         />
 
         {/* Stats & Trust Bar */}
@@ -227,14 +282,14 @@ export default function App() {
             <div>
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1">
                 <Sparkles className="w-4 h-4" />
-                <span>Verified Bangladesh Listings</span>
+                <span>{t.verifiedListings}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                 {filters.area
-                  ? `Flats & Apartments in ${filters.area}`
+                  ? `${t.flatsIn} ${filters.area}`
                   : selectedCity !== 'All'
-                  ? `Available Rentals in ${selectedCity}`
-                  : 'All Available Rental Homes'}
+                  ? `${t.flatsIn} ${selectedCity}`
+                  : t.allAvailableHomes}
               </h2>
             </div>
             <p className="text-xs text-slate-400 mt-2 sm:mt-0">
@@ -250,7 +305,7 @@ export default function App() {
             totalCount={properties.length}
           />
 
-          {/* Listings Grid / State */}
+          {/* Listings Grid */}
           {loading ? (
             <div className="py-24 text-center space-y-4">
               <RefreshCw className="w-10 h-10 text-emerald-400 animate-spin mx-auto" />
@@ -303,6 +358,12 @@ export default function App() {
           )}
 
         </section>
+
+        {/* Roommates & Sublet Finder Section */}
+        <div ref={roommatesRef} className="scroll-mt-24">
+          <RoommatesSection lang={lang} onSelectArea={handleSelectArea} />
+        </div>
+
       </main>
 
       {/* Property Detail Modal */}
@@ -316,6 +377,13 @@ export default function App() {
             setTourProperty(p);
             setIsTourModalOpen(true);
           }}
+          onAddToCompare={handleToggleCompare}
+          isCompared={comparedProperties.some((p) => p._id === selectedProperty._id)}
+          onOpenLease={(p) => {
+            setLeaseTargetProperty(p);
+            setIsLeaseModalOpen(true);
+          }}
+          lang={lang}
         />
       )}
 
@@ -345,6 +413,32 @@ export default function App() {
         savedProperties={savedProperties}
         onRemoveSave={handleToggleSave}
         onOpenDetails={(p) => setSelectedProperty(p)}
+      />
+
+      {/* Side-by-Side Comparison Modal */}
+      <CompareModal
+        isOpen={isCompareModalOpen}
+        onClose={() => setIsCompareModalOpen(false)}
+        properties={comparedProperties}
+        onRemoveProperty={(id) => setComparedProperties(comparedProperties.filter((p) => p._id !== id))}
+        onOpenDetails={(p) => setSelectedProperty(p)}
+        lang={lang}
+      />
+
+      {/* Affordability Calculator Modal */}
+      <AffordabilityCalculatorModal
+        isOpen={isCalculatorOpen}
+        onClose={() => setIsCalculatorOpen(false)}
+        onApplyBudget={handleApplyAffordableBudget}
+        lang={lang}
+      />
+
+      {/* Tenancy Agreement Generator Modal */}
+      <LeaseGeneratorModal
+        isOpen={isLeaseModalOpen}
+        onClose={() => setIsLeaseModalOpen(false)}
+        defaultProperty={leaseTargetProperty}
+        lang={lang}
       />
 
       {/* Footer */}

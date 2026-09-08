@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const path = require('path');
 const dotenv = require('dotenv');
 const Property = require('../models/Property');
+const Review = require('../models/Review');
+const Roommate = require('../models/Roommate');
 
 dotenv.config({ path: path.resolve(__dirname, '../../atlas-credentials.env') });
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -27,6 +29,9 @@ const sampleProperties = [
     facing: 'South',
     gasType: 'Titas Line Gas',
     electricityType: 'Prepaid Meter',
+    coordinates: { lat: 23.7925, lng: 90.4152 },
+    metroNearby: 'Gulshan Circle-2 / Diplomatic Zone',
+    landmarks: ['Gulshan Lake Park (200m)', 'Westin Hotel (3 min)', 'Unimart Gulshan'],
     amenities: {
       generatorBackup: true,
       lift: true,
@@ -51,13 +56,15 @@ const sampleProperties = [
     ],
     featured: true,
     verified: true,
+    nidVerified: true,
+    deedVerified: true,
     rating: 4.9,
     reviewCount: 14,
     status: 'Available',
   },
   {
     title: 'Spacious 3 Bed Flat Near Dhanmondi Lake & Mastermind School',
-    description: 'Well-ventilated, sunlit 3 BHK flat situated on Dhanmondi Road 8. Walking distance to Dhanmondi Lake, leading schools, and supermarkets. Titas gas connection available, separate dining and drawing hall, modern fittings, and private dedicated car parking space.',
+    description: 'Well-ventilated, sunlit 3 BHK flat situated on Dhanmondi Road 8A. Walking distance to Dhanmondi Lake, leading schools, and supermarkets. Titas gas connection available, separate dining and drawing hall, modern fittings, and private dedicated car parking space.',
     propertyType: 'Family Apartment',
     division: 'Dhaka',
     city: 'Dhaka',
@@ -75,6 +82,9 @@ const sampleProperties = [
     facing: 'South',
     gasType: 'Titas Line Gas',
     electricityType: 'Prepaid Meter',
+    coordinates: { lat: 23.7461, lng: 90.3742 },
+    metroNearby: 'Science Lab / Karwan Bazar Metro Station',
+    landmarks: ['Dhanmondi Lake Walkway (100m)', 'Mastermind School', 'Shwapno Super Shop'],
     amenities: {
       generatorBackup: true,
       lift: true,
@@ -98,6 +108,8 @@ const sampleProperties = [
     ],
     featured: true,
     verified: true,
+    nidVerified: true,
+    deedVerified: true,
     rating: 4.8,
     reviewCount: 9,
     status: 'Available',
@@ -122,6 +134,9 @@ const sampleProperties = [
     facing: 'East',
     gasType: 'Cylinder (LPG)',
     electricityType: 'Prepaid Meter',
+    coordinates: { lat: 23.8164, lng: 90.4357 },
+    metroNearby: 'Kuril Flyover / Metro feeder',
+    landmarks: ['North South University (NSU 5 min)', 'IUB Campus', 'Evercare Hospital (1km)'],
     amenities: {
       generatorBackup: true,
       lift: true,
@@ -145,13 +160,15 @@ const sampleProperties = [
     ],
     featured: true,
     verified: true,
+    nidVerified: true,
+    deedVerified: true,
     rating: 4.7,
     reviewCount: 19,
     status: 'Available',
   },
   {
-    title: 'Modern 3 Bed Flat with Titas Gas in Uttara Sector 11',
-    description: 'Brand new luxury building in Uttara Sector 11. Close to metro rail station, airport road, and park. Equipped with dual elevator system, standby silent generator, CCTV surveillance, 24-hr security, and intercom.',
+    title: 'Modern 3 Bed Flat with Titas Gas in Uttara Sector 11 (Near Metro)',
+    description: 'Brand new luxury building in Uttara Sector 11. 4-minute walk to Uttara Center Metro Rail Station. Equipped with dual elevator system, standby silent generator, CCTV surveillance, 24-hr security, and intercom.',
     propertyType: 'Family Apartment',
     division: 'Dhaka',
     city: 'Dhaka',
@@ -169,6 +186,9 @@ const sampleProperties = [
     facing: 'South',
     gasType: 'Titas Line Gas',
     electricityType: 'Prepaid Meter',
+    coordinates: { lat: 23.8759, lng: 90.3795 },
+    metroNearby: 'Uttara Center Metro Station (4 min walk)',
+    landmarks: ['Sector 11 Park', 'Zamzam Tower', 'Rajuk Uttara Model College'],
     amenities: {
       generatorBackup: true,
       lift: true,
@@ -190,8 +210,10 @@ const sampleProperties = [
       'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80',
     ],
-    featured: false,
+    featured: true,
     verified: true,
+    nidVerified: true,
+    deedVerified: true,
     rating: 4.9,
     reviewCount: 11,
     status: 'Available',
@@ -216,6 +238,9 @@ const sampleProperties = [
     facing: 'South-East',
     gasType: 'Titas Line Gas',
     electricityType: 'Prepaid Meter',
+    coordinates: { lat: 23.8344, lng: 90.3662 },
+    metroNearby: 'Pallabi Metro Station (5 min)',
+    landmarks: ['Mirpur DOHS Central Park', 'DOHS Mosque', 'MIST & BUP nearby'],
     amenities: {
       generatorBackup: true,
       lift: true,
@@ -239,6 +264,8 @@ const sampleProperties = [
     ],
     featured: true,
     verified: true,
+    nidVerified: true,
+    deedVerified: true,
     rating: 5.0,
     reviewCount: 7,
     status: 'Available',
@@ -263,6 +290,9 @@ const sampleProperties = [
     facing: 'South',
     gasType: 'Cylinder (LPG)',
     electricityType: 'Prepaid Meter',
+    coordinates: { lat: 23.8131, lng: 90.4312 },
+    metroNearby: 'Kuril Flyover',
+    landmarks: ['Near Apollo / Evercare Hospital', 'NSU Walkway'],
     amenities: {
       generatorBackup: true,
       lift: true,
@@ -285,6 +315,8 @@ const sampleProperties = [
     ],
     featured: true,
     verified: true,
+    nidVerified: true,
+    deedVerified: true,
     rating: 4.9,
     reviewCount: 16,
     status: 'Available',
@@ -309,6 +341,9 @@ const sampleProperties = [
     facing: 'South-West',
     gasType: 'Titas Line Gas',
     electricityType: 'Prepaid Meter',
+    coordinates: { lat: 23.7937, lng: 90.4048 },
+    metroNearby: 'Banani Bridge / Kemal Ataturk Avenue',
+    landmarks: ['Banani 11 Dining Hub', 'Presidency University', 'Sheraton Dhaka'],
     amenities: {
       generatorBackup: true,
       lift: true,
@@ -332,6 +367,8 @@ const sampleProperties = [
     ],
     featured: true,
     verified: true,
+    nidVerified: true,
+    deedVerified: true,
     rating: 5.0,
     reviewCount: 6,
     status: 'Available',
@@ -356,6 +393,9 @@ const sampleProperties = [
     facing: 'North',
     gasType: 'Titas Line Gas',
     electricityType: 'Prepaid Meter',
+    coordinates: { lat: 23.7667, lng: 90.3582 },
+    metroNearby: 'Agargaon Metro Station (10 min)',
+    landmarks: ['Japan Garden City Complex', 'Suchona Community Center', 'St. Joseph Higher Secondary'],
     amenities: {
       generatorBackup: true,
       lift: true,
@@ -378,6 +418,8 @@ const sampleProperties = [
     ],
     featured: false,
     verified: true,
+    nidVerified: true,
+    deedVerified: true,
     rating: 4.6,
     reviewCount: 12,
     status: 'Available',
@@ -402,6 +444,9 @@ const sampleProperties = [
     facing: 'South',
     gasType: 'Cylinder (LPG)',
     electricityType: 'Prepaid Meter',
+    coordinates: { lat: 22.3667, lng: 91.8222 },
+    metroNearby: 'GEC Circle Chittagong',
+    landmarks: ['Chittagong Club (5 min)', 'Khulshi Mart', 'Sanmar Ocean City'],
     amenities: {
       generatorBackup: true,
       lift: true,
@@ -424,6 +469,8 @@ const sampleProperties = [
     ],
     featured: true,
     verified: true,
+    nidVerified: true,
+    deedVerified: true,
     rating: 4.9,
     reviewCount: 8,
     status: 'Available',
@@ -448,6 +495,9 @@ const sampleProperties = [
     facing: 'East',
     gasType: 'Induction/Electric',
     electricityType: 'Prepaid Meter',
+    coordinates: { lat: 23.7788, lng: 90.4184 },
+    metroNearby: 'Gulshan-1 Circle',
+    landmarks: ['Police Plaza Concord', 'Hatirjheel Walkway (2 min)', 'Gulshan DCC Market'],
     amenities: {
       generatorBackup: true,
       lift: true,
@@ -470,9 +520,77 @@ const sampleProperties = [
     ],
     featured: true,
     verified: true,
+    nidVerified: true,
+    deedVerified: true,
     rating: 4.8,
     reviewCount: 22,
     status: 'Available',
+  },
+];
+
+const sampleRoommates = [
+  {
+    title: 'Roommate Needed for Master Bed with Attached Bath in Bashundhara D-Block',
+    posterName: 'Saadman Sakib',
+    posterGender: 'Male',
+    userType: 'University Student',
+    institutionOrCompany: 'North South University (CSE Department)',
+    area: 'Bashundhara R/A',
+    city: 'Dhaka',
+    budgetBDT: 9500,
+    roomType: 'Single Attached Bath',
+    availableFrom: '1st October',
+    habits: {
+      smoking: false,
+      studyFriendly: true,
+      cookingShared: true,
+      nightOwl: true,
+    },
+    contactPhone: '+8801799887766',
+    contactWhatsApp: '+8801799887766',
+    description: 'Looking for a calm, non-smoking NSU/IUB student or job holder. The room has attached bath, geyser, fast WiFi, and full maid service included.',
+  },
+  {
+    title: 'Female Flatmate Required for Single Bedroom in Dhanmondi 9A',
+    posterName: 'Nusrat Jahan',
+    posterGender: 'Female',
+    userType: 'Job Holder / Professional',
+    institutionOrCompany: 'Software Engineer @ bKash',
+    area: 'Dhanmondi',
+    city: 'Dhaka',
+    budgetBDT: 12000,
+    roomType: 'Single Master Bed',
+    availableFrom: 'Immediate',
+    habits: {
+      smoking: false,
+      studyFriendly: true,
+      cookingShared: true,
+      nightOwl: false,
+    },
+    contactPhone: '+8801822334455',
+    contactWhatsApp: '+8801822334455',
+    description: 'Safe gated apartment for female professional or student. Line gas active, lift, 24/7 security guard.',
+  },
+  {
+    title: '1 Seat Available in 2-Person Shared Room in Mirpur-10',
+    posterName: 'Rashedul Hasan',
+    posterGender: 'Male',
+    userType: 'University Student',
+    institutionOrCompany: 'DU Student / Job Aspirant',
+    area: 'Mirpur-10',
+    city: 'Dhaka',
+    budgetBDT: 4500,
+    roomType: 'Shared Room Seat',
+    availableFrom: '1st November',
+    habits: {
+      smoking: false,
+      studyFriendly: true,
+      cookingShared: true,
+      nightOwl: false,
+    },
+    contactPhone: '+8801933445566',
+    contactWhatsApp: '+8801933445566',
+    description: 'Near Mirpur-10 Metro Rail Station. Easy commute to Dhaka University and Motijheel.',
   },
 ];
 
@@ -491,12 +609,61 @@ async function seedDB() {
     console.log('[Seed] Connected to MongoDB Atlas');
 
     await Property.deleteMany({});
-    console.log('[Seed] Cleared existing properties');
+    await Review.deleteMany({});
+    await Roommate.deleteMany({});
+    console.log('[Seed] Cleared existing properties, reviews, and roommate posts');
 
-    const created = await Property.insertMany(sampleProperties);
-    console.log(`[Seed] Successfully seeded ${created.length} realistic Bangladesh rental properties!`);
+    const createdProps = await Property.insertMany(sampleProperties);
+    console.log(`[Seed] Seeded ${createdProps.length} properties.`);
+
+    // Seed sample reviews for the first 3 properties
+    const reviewsToSeed = [
+      {
+        property: createdProps[0]._id,
+        authorName: 'Tahmidur Rahman',
+        authorRole: 'Verified Resident',
+        rating: 5,
+        safetyRating: 5,
+        gasWaterRating: 5,
+        comment: 'Amazing peaceful building in Gulshan-2. Titas line gas pressure is always top notch and the 24/7 standby generator never leaves you without electricity.',
+      },
+      {
+        property: createdProps[0]._id,
+        authorName: 'Farhana Yasmin',
+        authorRole: 'Tenant',
+        rating: 5,
+        safetyRating: 5,
+        gasWaterRating: 5,
+        comment: 'Very cooperative landlord. Security guards are polite and CCTV keeps the premises secure.',
+      },
+      {
+        property: createdProps[1]._id,
+        authorName: 'Ashfaq Ahmed',
+        authorRole: 'Tenant',
+        rating: 5,
+        safetyRating: 5,
+        gasWaterRating: 4,
+        comment: 'Living near Dhanmondi lake walkway is a blessing for morning walks. Very airy flat with great sunlight.',
+      },
+      {
+        property: createdProps[2]._id,
+        authorName: 'Mahir Faysal',
+        authorRole: 'Tenant',
+        rating: 5,
+        safetyRating: 4,
+        gasWaterRating: 5,
+        comment: 'Best bachelor-friendly building in Bashundhara D-Block. Landlord is extremely friendly and understanding with students.',
+      },
+    ];
+
+    await Review.insertMany(reviewsToSeed);
+    console.log('[Seed] Seeded verified tenant reviews.');
+
+    await Roommate.insertMany(sampleRoommates);
+    console.log(`[Seed] Seeded ${sampleRoommates.length} roommate / sublet listings.`);
 
     await mongoose.connection.close();
+    console.log('[Seed Completed Successfully!]');
     process.exit(0);
   } catch (error) {
     console.error('[Seed Error]:', error);

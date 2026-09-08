@@ -1,5 +1,6 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
+// Property APIs
 export const fetchProperties = async (filters = {}) => {
   const queryParams = new URLSearchParams();
 
@@ -45,6 +46,7 @@ export const createProperty = async (propertyData) => {
   return response.json();
 };
 
+// Inquiries / Tour Booking APIs
 export const createInquiry = async (inquiryData) => {
   const response = await fetch(`${API_BASE_URL}/inquiries`, {
     method: 'POST',
@@ -54,6 +56,63 @@ export const createInquiry = async (inquiryData) => {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.message || 'Failed to schedule tour');
+  }
+  return response.json();
+};
+
+// Reviews APIs
+export const fetchReviews = async (propertyId) => {
+  const response = await fetch(`${API_BASE_URL}/reviews/property/${propertyId}`);
+  if (!response.ok) return { success: false, data: [] };
+  return response.json();
+};
+
+export const submitReview = async (reviewData) => {
+  const response = await fetch(`${API_BASE_URL}/reviews`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(reviewData),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || 'Failed to submit review');
+  }
+  return response.json();
+};
+
+// Roommate APIs
+export const fetchRoommates = async (filters = {}) => {
+  const queryParams = new URLSearchParams();
+  Object.entries(filters).forEach(([k, v]) => {
+    if (v && v !== 'All') queryParams.append(k, v);
+  });
+  const response = await fetch(`${API_BASE_URL}/roommates?${queryParams.toString()}`);
+  if (!response.ok) return { success: false, data: [] };
+  return response.json();
+};
+
+export const createRoommatePost = async (data) => {
+  const response = await fetch(`${API_BASE_URL}/roommates`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || 'Failed to post roommate request');
+  }
+  return response.json();
+};
+
+// Lease Agreement Generator API
+export const generateLeaseAgreement = async (data) => {
+  const response = await fetch(`${API_BASE_URL}/lease/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to generate lease agreement');
   }
   return response.json();
 };

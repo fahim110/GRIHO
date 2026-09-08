@@ -127,6 +127,30 @@ const propertySchema = new mongoose.Schema(
       ],
       default: 'Family Only',
     },
+    coordinates: {
+      lat: { type: Number, default: 23.8103 },
+      lng: { type: Number, default: 90.4125 },
+    },
+    metroNearby: {
+      type: String,
+      default: '',
+    },
+    landmarks: {
+      type: [String],
+      default: [],
+    },
+    videoTourUrl: {
+      type: String,
+      default: '',
+    },
+    nidVerified: {
+      type: Boolean,
+      default: true,
+    },
+    deedVerified: {
+      type: Boolean,
+      default: true,
+    },
     availableFrom: {
       type: String,
       default: 'Immediate',
