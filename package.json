@@ -1,0 +1,14 @@
+{
+  "name": "griho-bangladesh-rentals",
+  "version": "1.0.0",
+  "description": "GRIHO (গৃহ) - Bangladesh House & Apartment Rental Platform",
+  "scripts": {
+    "server": "node server/index.js",
+    "client": "npm --prefix client run dev",
+    "seed": "node server/seed/seedData.js"
+  },
+  "keywords": ["bangladesh", "rentals", "dhaka-apartments", "bachelor-flats", "griho"],
+  "author": "Fahim",
+  "license": "MIT"
+}
+
