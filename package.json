@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "npm --prefix frontend install && npm --prefix frontend run build",
-    "render-build": "npm install && npm --prefix frontend install && npm --prefix frontend run build",
+    "build": "npm --prefix frontend install --include=dev && npm --prefix frontend run build",
+    "render-build": "npm install --include=dev && npm --prefix frontend install --include=dev && npm --prefix frontend run build",
     "dev": "npm --prefix frontend run dev",
     "dev:backend": "node --watch index.js",
     "dev:frontend": "npm --prefix frontend run dev",
